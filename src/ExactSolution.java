@@ -1,32 +1,17 @@
 import javafx.scene.chart.XYChart;
 
+public class ExactSolution extends Solution {
 
-/*
- *
- */
-public class ExactSolution {
-    private XYChart.Series<Double, Double> points;
-
-    public ExactSolution(String name) {
-        points = new XYChart.Series<>();
-        points.setName(name);
+    public ExactSolution(double x0, double x, double y, double N) {
+        super(x0, x, y, N);
     }
 
-    public void buildPoints(double x, double x0, int N) {
-        points = new XYChart.Series<>();
-        double step = (x0 - x) / N;
-        double ix = x; // initial x
-
-        for (int i = 0; i < N + 1; ++i) {
+    @Override
+    public void solve() {
+        for (int i = 0; i < getN() + 1; ++i) {
+            var ix = xAxis.get(i);
             var ry = 3 * ix * ix - ix; // resulting y
-            points.getData().add(new XYChart.Data<>(ix, ry));
-            ix += step;
+            yAxis.add(i, ry);
         }
-    }
-
-    // N - steps
-    public XYChart.Series getPoints(double x, double x0, int N) {
-        buildPoints(x, x0, N);
-        return points;
     }
 }

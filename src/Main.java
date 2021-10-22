@@ -18,7 +18,7 @@ public class Main extends Application{
         stage.setScene(mainView.getScene());
         stage.setTitle("Differential Equation Solver");
         stage.setWidth(900);
-        stage.setHeight(650);
+        stage.setHeight(700);
         stage.setResizable(false);
         stage.show();
     }
