@@ -21,6 +21,7 @@ public class RungeKuttaSolution extends NumericalSolution {
 
             var y_next = y_i + (K1 + 2 * K2 + 2 * K3 + K4) / 6;
             yAxis.add(i, y_next);
+            System.out.println(y_next);
         }
     }
 }

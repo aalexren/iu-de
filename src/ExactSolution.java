@@ -12,6 +12,8 @@ public class ExactSolution extends Solution {
             var ix = xAxis.get(i);
             var ry = 3 * ix * ix - ix; // resulting y
             yAxis.add(i, ry);
+//            System.out.println(ix);
+//            System.out.println(ry);
         }
     }
 }

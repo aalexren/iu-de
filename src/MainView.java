@@ -24,15 +24,27 @@ public class MainView {
     protected TextField tbxN;
     protected Label lblN;
 
+    protected TextField tbxN_MAX;
+    protected Label lblN_MAX;
+
     protected RadioButton rbMain;
     protected RadioButton rbLTE;
     protected RadioButton rbGTE;
     protected ToggleGroup radioGroup;
 
+    protected CheckBox chbxExact;
+    protected CheckBox chbxEuler;
+    protected CheckBox chbxImproved;
+    protected CheckBox chbxRunge;
+
     ExactSolution exactSolution;
     EulerSolution eulerSolution;
     ImprovedEulerSolution improvedEulerSolution;
     RungeKuttaSolution rungeKuttaSolution;
+
+    Error eulerError;
+    Error improvedEulerError;
+    Error rungeKuttaError;
 
     public MainView() {
         buildPagination();
@@ -44,14 +56,20 @@ public class MainView {
         group.getChildren().add(tbxX);
         group.getChildren().add(tbxY);
         group.getChildren().add(tbxN);
+        group.getChildren().add(tbxN_MAX);
         group.getChildren().add(lblX0);
         group.getChildren().add(lblX);
         group.getChildren().add(lblY);
         group.getChildren().add(lblN);
+        group.getChildren().add(lblN_MAX);
         group.getChildren().add(btnCalculate);
         group.getChildren().add(rbGTE);
         group.getChildren().add(rbLTE);
         group.getChildren().add(rbMain);
+        group.getChildren().add(chbxExact);
+        group.getChildren().add(chbxEuler);
+        group.getChildren().add(chbxImproved);
+        group.getChildren().add(chbxRunge);
         scene = new Scene(group);
     }
 
@@ -84,31 +102,6 @@ public class MainView {
         btnCalculate.fire(); // build chart
     }
 
-//    protected void buildLTELineChart() {
-//        NumberAxis xAxis = new NumberAxis();
-//        xAxis.setLabel("x Axis");
-//
-//        NumberAxis yAxis = new NumberAxis();
-//        yAxis.setLabel("y Axis");
-//
-//        lineChartLTE = new LineChart(xAxis, yAxis);
-//
-//        lineChartLTE.setLayoutX(10);
-//        lineChartLTE.setLayoutX(10);
-//
-//        lineChartLTE.setPrefWidth(850);
-//        lineChartLTE.setMinWidth(850);
-//        lineChartLTE.setMaxWidth(850);
-//
-//        lineChartLTE.setPrefHeight(575);
-//        lineChartLTE.setMinHeight(575);
-//        lineChartLTE.setMaxHeight(575);
-//
-//        lineChartLTE.setCreateSymbols(false); // убрать обводку точек на графике
-//
-//        lineChartLTE.setVisible(false);
-//    }
-
     protected void buildInput() {
         btnCalculate = new Button("Calculate");
         btnCalculate.setLayoutX(500);
@@ -136,7 +129,7 @@ public class MainView {
                     drawLineChartLTE();
                 }
                 else {
-                    //
+                    drawLineChartGTE();
                 }
             }
         });
@@ -145,11 +138,13 @@ public class MainView {
         tbxX = new TextField();
         tbxY = new TextField();
         tbxN = new TextField();
+        tbxN_MAX = new TextField();
 
         lblX0 = new Label("X_0");
         lblX = new Label("X");
         lblY = new Label("Y");
         lblN = new Label("N");
+        lblN_MAX = new Label("N_MAX");
 
         tbxX0.setLayoutX(100);
         tbxX0.setLayoutY(600);
@@ -182,30 +177,85 @@ public class MainView {
         lblN.setLayoutX(400);
         lblN.setLayoutY(580);
         tbxN.setText("20");
+
+        tbxN_MAX.setLayoutX(400);
+        tbxN_MAX.setLayoutY(660);
+        tbxN_MAX.setMaxSize(80, 30);
+        tbxN_MAX.setMinSize(80, 30);
+        tbxN_MAX.setDisable(true);
+        lblN_MAX.setLayoutX(400);
+        lblN_MAX.setLayoutY(640);
+        tbxN_MAX.setText("200");
     }
 
     private void buildPagination() {
         radioGroup = new ToggleGroup();
         rbMain = new RadioButton("Methods");
-        rbMain.setLayoutX(700);
+        rbMain.setLayoutX(630);
         rbMain.setLayoutY(590);
         rbMain.setToggleGroup(radioGroup);
         rbMain.fire();
         rbLTE = new RadioButton("Local Errors");
-        rbLTE.setLayoutX(700);
+        rbLTE.setLayoutX(630);
         rbLTE.setLayoutY(610);
         rbLTE.setToggleGroup(radioGroup);
         rbGTE = new RadioButton("Global Errors");
-        rbGTE.setLayoutX(700);
+        rbGTE.setLayoutX(630);
         rbGTE.setLayoutY(630);
         rbGTE.setToggleGroup(radioGroup);
 
         rbMain.setOnAction(actionEvent -> {
+            chbxExact.setDisable(false);
+            tbxN_MAX.setDisable(true);
+            lineChart.getXAxis().setLabel("x Axis");
             drawLineChart();
         });
 
         rbLTE.setOnAction(actionEvent -> {
+            chbxExact.setDisable(true);
+            tbxN_MAX.setDisable(true);
+            lineChart.getXAxis().setLabel("x Axis");
             drawLineChartLTE();
+        });
+
+        rbGTE.setOnAction(actionEvent -> {
+            chbxExact.setDisable(true);
+            tbxN_MAX.setDisable(false);
+            lineChart.getXAxis().setLabel("N Axis");
+            drawLineChartGTE();
+        });
+
+        chbxExact = new CheckBox("Exact");
+        chbxExact.setLayoutX(750);
+        chbxExact.setLayoutY(590);
+        chbxExact.setSelected(true);
+        chbxEuler = new CheckBox("Euler");
+        chbxEuler.setLayoutX(750);
+        chbxEuler.setLayoutY(610);
+        chbxEuler.setSelected(true);
+        chbxImproved = new CheckBox("Improved");
+        chbxImproved.setLayoutX(750);
+        chbxImproved.setLayoutY(630);
+        chbxImproved.setSelected(true);
+        chbxRunge = new CheckBox("Runge Kutta");
+        chbxRunge.setLayoutX(750);
+        chbxRunge.setLayoutY(650);
+        chbxRunge.setSelected(true);
+
+        chbxExact.setOnAction(e -> {
+            btnCalculate.fire();
+        });
+
+        chbxEuler.setOnAction(e -> {
+            btnCalculate.fire();
+        });
+
+        chbxImproved.setOnAction(e -> {
+            btnCalculate.fire();
+        });
+
+        chbxRunge.setOnAction(e -> {
+            btnCalculate.fire();
         });
 
     }
@@ -227,6 +277,17 @@ public class MainView {
 
         rungeKuttaSolution = new RungeKuttaSolution(x0, x, y, N);
         rungeKuttaSolution.solve();
+
+        /// ERRORS
+
+        eulerError = new Error(x0, x, y, N);
+        eulerError.calcError(eulerSolution);
+
+        improvedEulerError = new Error(x0, x, y ,N);
+        improvedEulerError.calcError(improvedEulerSolution);
+
+        rungeKuttaError = new Error(x0, x, y ,N);
+        rungeKuttaError.calcError(rungeKuttaSolution);
     }
 
     private void drawLineChart() {
@@ -243,10 +304,10 @@ public class MainView {
         var pointsRungeKutta =
                 PointsExtracter.makeXYChartSeries("Runge Kutta Solution", rungeKuttaSolution.getxAxis(), rungeKuttaSolution.getyAxis());
 
-        lineChart.getData().add(pointsExact);
-        lineChart.getData().add(pointsEuler);
-        lineChart.getData().add(pointsImprovedEuler);
-        lineChart.getData().add(pointsRungeKutta);
+        if (chbxExact.isSelected()) lineChart.getData().add(pointsExact);
+        if (chbxEuler.isSelected()) lineChart.getData().add(pointsEuler);
+        if (chbxImproved.isSelected()) lineChart.getData().add(pointsImprovedEuler);
+        if (chbxRunge.isSelected()) lineChart.getData().add(pointsRungeKutta);
     }
 
     private void drawLineChartLTE() {
@@ -259,19 +320,42 @@ public class MainView {
 
         initMethods();
 
-        Error eulerError = new Error(x0, x, y, N);
-        eulerError.calcError(eulerSolution);
+
         var pointsEulerErorr =
                 PointsExtracter.makeXYChartSeries("Euler Error", eulerError.getxAxis(), eulerError.getyAxis());
-        Error improvedEulerError = new Error(x0, x, y ,N);
-        improvedEulerError.calcError(improvedEulerSolution);
         var pointsImpr = PointsExtracter.makeXYChartSeries("Improved Euler Error", improvedEulerError.getxAxis(), improvedEulerError.getyAxis());
-        Error rungeKuttaError = new Error(x0, x, y ,N);
-        rungeKuttaError.calcError(rungeKuttaSolution);
         var pointsRunge = PointsExtracter.makeXYChartSeries("Runge Kutta Error", rungeKuttaError.getxAxis(), rungeKuttaError.getyAxis());
 
-        lineChart.getData().add(pointsEulerErorr);
-        lineChart.getData().add(pointsImpr);
-        lineChart.getData().add(pointsRunge);
+        if (chbxEuler.isSelected()) lineChart.getData().add(pointsEulerErorr);
+        if (chbxImproved.isSelected()) lineChart.getData().add(pointsImpr);
+        if (chbxRunge.isSelected()) lineChart.getData().add(pointsRunge);
+    }
+
+    private void drawLineChartGTE() {
+        lineChart.getData().clear();
+
+        double x0 = Double.valueOf(tbxX0.getText());
+        double x = Double.valueOf(tbxX.getText());
+        double y = Double.valueOf(tbxY.getText());
+        double N = Double.valueOf(tbxN.getText());
+        double N_MAX = Double.valueOf(tbxN_MAX.getText());
+
+        initMethods();
+
+        // TODO
+        GlobalError eulerGError = new GlobalError(x0, x, y, N, N_MAX);
+        eulerGError.calcError(eulerError, eulerSolution);
+        var pointsEulerErorr =
+                PointsExtracter.makeXYChartSeries("Euler Global Error", eulerGError.getxAxis(), eulerGError.getyAxis());
+        GlobalError improvedEulerGError = new GlobalError(x0, x, y ,N, N_MAX);
+        improvedEulerGError.calcError(improvedEulerError, improvedEulerSolution);
+        var pointsImpr = PointsExtracter.makeXYChartSeries("Improved Euler Global Error", improvedEulerGError.getxAxis(), improvedEulerGError.getyAxis());
+        GlobalError rungeKuttaGError = new GlobalError(x0, x, y ,N, N_MAX);
+        rungeKuttaGError.calcError(rungeKuttaError, rungeKuttaSolution);
+        var pointsRunge = PointsExtracter.makeXYChartSeries("Runge Kutta Global Error", rungeKuttaGError.getxAxis(), rungeKuttaGError.getyAxis());
+
+        if (chbxEuler.isSelected()) lineChart.getData().add(pointsEulerErorr);
+        if (chbxImproved.isSelected()) lineChart.getData().add(pointsImpr);
+        if (chbxRunge.isSelected()) lineChart.getData().add(pointsRunge);
     }
 }

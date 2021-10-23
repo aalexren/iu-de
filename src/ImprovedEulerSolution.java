@@ -19,6 +19,8 @@ public class ImprovedEulerSolution extends NumericalSolution{
             K1 = getStep() * Formula.initFunc(xAxis.get(i), y_next);
             K2 = getStep() * Formula.initFunc(xAxis.get(i) + getStep(), y_next + K1);
             y_prev = y_next;
+
+//            System.out.println(y_next);
         }
     }
 }

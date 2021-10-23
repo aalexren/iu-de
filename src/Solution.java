@@ -32,7 +32,6 @@ public class Solution {
         for (int i = 0; i < N + 1; ++i) {
             xAxis.add(cur_x);
             cur_x += h;
-//            yAxis.add(0.0);
         }
     }
 
@@ -66,5 +65,9 @@ public class Solution {
 
     public double getN() {
         return N;
+    }
+
+    protected void setN(double N) {
+        this.N = N;
     }
 }

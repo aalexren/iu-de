@@ -16,6 +16,7 @@ public class EulerSolution extends NumericalSolution {
         for (int i = 1; i < getN() + 1; ++i) {
             var y_next = yAxis.get(i - 1) + getStep() * Formula.initFunc(xAxis.get(i-1), yAxis.get(i-1));
             yAxis.add(i, y_next);
+//            System.out.println(y_next);
         }
     }
 }

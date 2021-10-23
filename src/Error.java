@@ -1,3 +1,7 @@
+interface IError {
+    public void calcError(Solution sol);
+}
+
 public class Error extends NumericalSolution implements IError {
     public Error(double x0, double x, double y, double N) {
         super(x0, x, y, N);
